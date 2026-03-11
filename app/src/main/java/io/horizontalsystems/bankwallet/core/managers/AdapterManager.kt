@@ -5,6 +5,7 @@ import io.horizontalsystems.bankwallet.core.IAdapterManager
 import io.horizontalsystems.bankwallet.core.IBalanceAdapter
 import io.horizontalsystems.bankwallet.core.IReceiveAdapter
 import io.horizontalsystems.bankwallet.core.IWalletManager
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.factories.AdapterFactory
 import io.horizontalsystems.bankwallet.entities.Wallet
 import io.horizontalsystems.marketkit.models.BlockchainType
@@ -28,6 +29,7 @@ class AdapterManager(
     private val tonKitManager: TonKitManager,
     private val stellarKitManager: StellarKitManager,
     private val moneroNodeManager: MoneroNodeManager,
+    private val oxyraNodeManager: OxyraNodeManager,
     private val restoreSettingsManager: RestoreSettingsManager
 ) : IAdapterManager {
 
@@ -65,6 +67,11 @@ class AdapterManager(
         coroutineScope.launch {
             moneroNodeManager.currentNodeUpdatedFlow.collect {
                 handleUpdatedKit(BlockchainType.Monero)
+            }
+        }
+        coroutineScope.launch {
+            oxyraNodeManager.currentNodeUpdatedFlow.collect {
+                handleUpdatedKit(OxyraBlockchainType)
             }
         }
         coroutineScope.launch {

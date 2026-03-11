@@ -4,6 +4,7 @@ import io.horizontalsystems.bankwallet.core.managers.TransactionAdapterManager
 import io.horizontalsystems.bankwallet.entities.transactionrecords.TransactionRecord
 import io.horizontalsystems.bankwallet.modules.contacts.model.Contact
 import io.horizontalsystems.marketkit.models.Blockchain
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.marketkit.models.BlockchainType
 import io.reactivex.Observable
 import io.reactivex.subjects.PublishSubject
@@ -86,6 +87,7 @@ class TransactionRecordRepository(
                 BlockchainType.Tron,
                 BlockchainType.Stellar,
                 BlockchainType.Monero,
+                OxyraBlockchainType,
                 BlockchainType.Ton -> {
                     if (mergedWallets.none { it.source == wallet.source }) {
                         mergedWallets.add(TransactionWallet(null, wallet.source, null))

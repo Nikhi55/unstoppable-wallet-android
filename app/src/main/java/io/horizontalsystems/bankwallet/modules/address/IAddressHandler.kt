@@ -1,11 +1,14 @@
 package io.horizontalsystems.bankwallet.modules.address
 
 import com.unstoppabledomains.resolution.Resolution
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.adapters.zcash.ZcashAddressValidator
 import io.horizontalsystems.bankwallet.entities.Address
 import io.horizontalsystems.bankwallet.entities.BitcoinAddress
 import io.horizontalsystems.bankwallet.entities.MoneroWatchAddress
+import io.horizontalsystems.bankwallet.entities.OxyraWatchAddress
 import io.horizontalsystems.bankwallet.modules.watchaddress.MoneroUriParser
+import io.horizontalsystems.bankwallet.modules.watchaddress.OxyraUriParser
 import io.horizontalsystems.bitcoincore.crypto.Base58
 import io.horizontalsystems.bitcoincore.network.Network
 import io.horizontalsystems.bitcoincore.utils.Base58AddressConverter
@@ -16,6 +19,7 @@ import io.horizontalsystems.marketkit.models.BlockchainType
 import io.horizontalsystems.marketkit.models.TokenQuery
 import io.horizontalsystems.marketkit.models.TokenType
 import io.horizontalsystems.monerokit.MoneroKit
+import io.horizontalsystems.oxyrakit.OxyraKit
 import io.horizontalsystems.stellarkit.StellarKit
 import io.horizontalsystems.tonkit.core.TonKit
 import io.horizontalsystems.tronkit.account.AddressHandler
@@ -132,6 +136,7 @@ class AddressHandlerUdn(
             BlockchainType.Ton -> "TON"
             BlockchainType.Stellar -> "XLM"
             BlockchainType.Monero -> "XMR"
+            OxyraBlockchainType -> "OXY"
             is BlockchainType.Unsupported -> blockchainType.uid
         }
 
@@ -337,6 +342,32 @@ class AddressHandlerMonero : IAddressHandler {
             val height = uriInfo.height
 
             MoneroWatchAddress(address, viewKey, height)
+        } else {
+            Address(hex = value, blockchainType = blockchainType)
+        }
+    }
+}
+
+class AddressHandlerOxyra : IAddressHandler {
+    override val blockchainType = OxyraBlockchainType
+
+    override fun isSupported(value: String) = try {
+        val uriInfo = OxyraUriParser.parse(value)
+        val address = uriInfo?.address ?: value
+        OxyraKit.validateAddress(address)
+        true
+    } catch (_: Exception) {
+        false
+    }
+
+    override fun parseAddress(value: String): Address {
+        val uriInfo = OxyraUriParser.parse(value)
+        return if (uriInfo?.viewKey != null) {
+            val address = uriInfo.address
+            val viewKey = uriInfo.viewKey
+            val height = uriInfo.height
+
+            OxyraWatchAddress(address, viewKey, height)
         } else {
             Address(hex = value, blockchainType = blockchainType)
         }

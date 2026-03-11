@@ -3,6 +3,7 @@ package io.horizontalsystems.bankwallet.modules.address
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.horizontalsystems.bankwallet.core.App
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.utils.AddressUriParser
 import io.horizontalsystems.bankwallet.entities.Address
 import io.horizontalsystems.bitcoincash.MainNetBitcoinCash
@@ -90,6 +91,9 @@ object AddressInputModule {
                 }
                 BlockchainType.Monero -> {
                     addressParserChain.addHandler(AddressHandlerMonero())
+                }
+                OxyraBlockchainType -> {
+                    addressParserChain.addHandler(AddressHandlerOxyra())
                 }
                 is BlockchainType.Unsupported -> Unit
             }

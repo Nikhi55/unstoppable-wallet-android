@@ -1,5 +1,6 @@
 package io.horizontalsystems.bankwallet.entities
 
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.factories.uriScheme
 import io.horizontalsystems.bankwallet.core.managers.EvmBlockchainManager
 import io.horizontalsystems.bankwallet.core.supported
@@ -45,7 +46,7 @@ class AddressUri(
         companion object {
             fun amountField(blockchainType: BlockchainType): Field {
                 return when {
-                    blockchainType == BlockchainType.Monero -> {
+                    blockchainType == BlockchainType.Monero || blockchainType == OxyraBlockchainType -> {
                         TxAmount
                     }
                     else -> {

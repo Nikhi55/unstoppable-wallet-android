@@ -12,6 +12,7 @@ import io.horizontalsystems.bankwallet.entities.Account
 import io.horizontalsystems.bankwallet.entities.AccountType
 import io.horizontalsystems.bankwallet.modules.manageaccount.showextendedkey.ShowExtendedKeyModule
 import io.horizontalsystems.bankwallet.modules.manageaccount.showmonerokey.ShowMoneroKeyModule
+import io.horizontalsystems.bankwallet.modules.manageaccount.showoxyrakey.ShowOxyraKeyModule
 import io.horizontalsystems.ethereumkit.core.signer.Signer
 import io.horizontalsystems.hdwalletkit.HDExtendedKey
 import io.horizontalsystems.hdwalletkit.HDWallet
@@ -69,6 +70,7 @@ class PrivateKeysViewModel(
         }
 
         val moneroKeys = ShowMoneroKeyModule.getPrivateMoneroKeys(account)
+        val oxyraKeys = ShowOxyraKeyModule.getPrivateOxyraKeys(account)
 
         viewState = PrivateKeysModule.ViewState(
             evmPrivateKey = ethereumPrivateKey,
@@ -79,7 +81,8 @@ class PrivateKeysViewModel(
                 PrivateKeysModule.ExtendedKey(it, accountExtendedDisplayType)
             },
             stellarSecretKey = stellarSecretKey,
-            moneroKeys = moneroKeys
+            moneroKeys = moneroKeys,
+            oxyraKeys = oxyraKeys
         )
     }
 

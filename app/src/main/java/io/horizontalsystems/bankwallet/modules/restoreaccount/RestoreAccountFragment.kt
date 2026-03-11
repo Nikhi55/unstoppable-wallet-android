@@ -21,6 +21,7 @@ import io.horizontalsystems.bankwallet.modules.restoreaccount.restoremenu.Restor
 import io.horizontalsystems.bankwallet.modules.restoreaccount.restoremnemonic.RestorePhrase
 import io.horizontalsystems.bankwallet.modules.restoreaccount.restoremnemonicnonstandard.RestorePhraseNonStandard
 import io.horizontalsystems.bankwallet.modules.restoreconfig.RestoreBirthdayHeightScreen
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.marketkit.models.BlockchainType
 
 class RestoreAccountFragment : BaseComposeFragment(screenshotEnabled = false) {
@@ -88,6 +89,7 @@ private fun RestoreAccountNavHost(
                     when (token.blockchainType) {
                         BlockchainType.Zcash -> navController.navigate("zcash_configure")
                         BlockchainType.Monero -> navController.navigate("monero_configure")
+                        OxyraBlockchainType -> navController.navigate("oxyra_configure")
                         else -> Unit
                     }
                 },
@@ -117,6 +119,19 @@ private fun RestoreAccountNavHost(
         composablePage("monero_configure") {
             RestoreBirthdayHeightScreen(
                 blockchainType = BlockchainType.Monero,
+                onCloseWithResult = { config ->
+                    mainViewModel.setBirthdayHeightConfig(config)
+                    navController.popBackStack()
+                },
+                onCloseClick = {
+                    mainViewModel.cancelBirthdayHeightConfig = true
+                    navController.popBackStack()
+                }
+            )
+        }
+        composablePage("oxyra_configure") {
+            RestoreBirthdayHeightScreen(
+                blockchainType = OxyraBlockchainType,
                 onCloseWithResult = { config ->
                     mainViewModel.setBirthdayHeightConfig(config)
                     navController.popBackStack()

@@ -4,8 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.horizontalsystems.bankwallet.core.App
 import io.horizontalsystems.bankwallet.core.managers.MoneroNodeManager.MoneroNode
+import io.horizontalsystems.bankwallet.core.managers.OxyraNodeManager.OxyraNode
 import io.horizontalsystems.bankwallet.core.order
 import io.horizontalsystems.bankwallet.entities.BtcRestoreMode
+import io.horizontalsystems.bankwallet.modules.market.ImageSource
 import io.horizontalsystems.bankwallet.entities.EvmSyncSource
 import io.horizontalsystems.marketkit.models.Blockchain
 import io.horizontalsystems.solanakit.models.RpcSource
@@ -21,7 +23,8 @@ object BlockchainSettingsModule {
                     App.evmBlockchainManager,
                     App.evmSyncSourceManager,
                     App.solanaRpcSourceManager,
-                    App.moneroNodeManager
+                    App.moneroNodeManager,
+                    App.oxyraNodeManager
                 )
             return BlockchainSettingsViewModel(service) as T
         }
@@ -30,7 +33,7 @@ object BlockchainSettingsModule {
     data class BlockchainViewItem(
         val title: String,
         val subtitle: String,
-        val imageUrl: String,
+        val imageSource: ImageSource,
         val blockchainItem: BlockchainItem
     )
 
@@ -55,6 +58,11 @@ object BlockchainSettingsModule {
         class Monero(
             override val blockchain: Blockchain,
             val node: MoneroNode
+        ) : BlockchainItem()
+
+        class Oxyra(
+            override val blockchain: Blockchain,
+            val node: OxyraNode
         ) : BlockchainItem()
 
         val order

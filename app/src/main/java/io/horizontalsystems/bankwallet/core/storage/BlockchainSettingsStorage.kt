@@ -12,6 +12,7 @@ class BlockchainSettingsStorage(appDatabase: AppDatabase) {
         const val keyBtcTransactionSort: String = "btc-transaction-sort"
         const val keyEvmSyncSourceUrl: String = "evm-sync-source-url"
         const val keyMoneroNode: String = "monero-node"
+        const val keyOxyraNode: String = "oxyra-node"
     }
 
     private val dao by lazy { appDatabase.blockchainSettingDao() }
@@ -72,6 +73,20 @@ class BlockchainSettingsStorage(appDatabase: AppDatabase) {
             BlockchainSettingRecord(
                 blockchainUid = BlockchainType.Monero.uid,
                 key = keyMoneroNode,
+                value = host
+            )
+        )
+    }
+
+    fun oxyraNodeHost(): String? {
+        return dao.getBlockchainSetting("oxyra", keyOxyraNode)?.value
+    }
+
+    fun saveOxyraNode(host: String) {
+        dao.insert(
+            BlockchainSettingRecord(
+                blockchainUid = "oxyra",
+                key = keyOxyraNode,
                 value = host
             )
         )

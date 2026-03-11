@@ -26,6 +26,7 @@ import io.horizontalsystems.bankwallet.modules.balance.token.TokenBalanceModule.
 import io.horizontalsystems.bankwallet.modules.transactions.TransactionItem
 import io.horizontalsystems.bankwallet.modules.transactions.TransactionViewItem
 import io.horizontalsystems.bankwallet.modules.transactions.TransactionViewItemFactory
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.marketkit.models.BlockchainType
 import io.horizontalsystems.marketkit.models.TokenQuery
 import io.horizontalsystems.marketkit.models.TokenType
@@ -262,7 +263,7 @@ class TokenBalanceViewModel(
 
     private fun getBirthdayHeight(): Long? {
         val blockchainType = wallet.token.blockchainType
-        if (blockchainType != BlockchainType.Zcash && blockchainType != BlockchainType.Monero) {
+        if (blockchainType != BlockchainType.Zcash && blockchainType != BlockchainType.Monero && blockchainType != OxyraBlockchainType) {
             return null
         }
         return restoreSettingsManager.settings(wallet.account, blockchainType).birthdayHeight

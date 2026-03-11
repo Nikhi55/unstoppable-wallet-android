@@ -3,6 +3,7 @@ package io.horizontalsystems.bankwallet.modules.watchaddress
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.horizontalsystems.bankwallet.core.App
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.modules.address.AddressHandlerFactory
 import io.horizontalsystems.marketkit.models.BlockchainType
 
@@ -19,6 +20,7 @@ object WatchAddressModule {
         add(BlockchainType.ECash)
         add(BlockchainType.Stellar)
         add(BlockchainType.Monero)
+        add(OxyraBlockchainType)
     }
 
     class Factory : ViewModelProvider.Factory {

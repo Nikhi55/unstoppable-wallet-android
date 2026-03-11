@@ -1,0 +1,11 @@
+# ninja log v5
+0	1460	1771129356174596122	CMakeFiles/oxyrujo.dir/src/main/cpp/monerujo.cpp.o	2b7a63d58706241f
+1461	2384	1771129357007580341	../../../../build/intermediates/cxx/RelWithDebInfo/4h175c53/obj/arm64-v8a/liboxyrujo.so	76daa763a4bc1907
+2	4600	1772176040509962365	CMakeFiles/oxyrujo.dir/src/main/cpp/monerujo.cpp.o	2b7a63d58706241f
+4603	7027	1772176042417623962	../../../../build/intermediates/cxx/RelWithDebInfo/4h175c53/obj/arm64-v8a/liboxyrujo.so	76daa763a4bc1907
+0	10	0	clean	91c5ec735784044a
+105	2753	1772190355087311181	CMakeFiles/oxyrujo.dir/src/main/cpp/monerujo.cpp.o	2b7a63d58706241f
+2753	3358	1772190355664956213	../../../../build/intermediates/cxx/RelWithDebInfo/4h175c53/obj/arm64-v8a/liboxyrujo.so	76daa763a4bc1907
+0	50	0	clean	91c5ec735784044a
+3	1600	1772194712849780559	CMakeFiles/oxyrujo.dir/src/main/cpp/monerujo.cpp.o	2b7a63d58706241f
+1600	2307	1772194713528444809	../../../../build/intermediates/cxx/RelWithDebInfo/4h175c53/obj/arm64-v8a/liboxyrujo.so	76daa763a4bc1907

@@ -12,4 +12,5 @@ sealed class SendTransactionResult {
     object Ton : SendTransactionResult()
     object Zcash : SendTransactionResult()
     object Monero : SendTransactionResult()
+    object Oxyra : SendTransactionResult()
 }

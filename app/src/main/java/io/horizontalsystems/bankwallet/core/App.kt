@@ -46,6 +46,8 @@ import io.horizontalsystems.bankwallet.core.managers.MarketKitWrapper
 import io.horizontalsystems.bankwallet.core.managers.MigrationManager
 import io.horizontalsystems.bankwallet.core.managers.MoneroBirthdayProvider
 import io.horizontalsystems.bankwallet.core.managers.MoneroNodeManager
+import io.horizontalsystems.bankwallet.core.managers.OxyraBirthdayProvider
+import io.horizontalsystems.bankwallet.core.managers.OxyraNodeManager
 import io.horizontalsystems.bankwallet.core.managers.NetworkManager
 import io.horizontalsystems.bankwallet.core.managers.NftAdapterManager
 import io.horizontalsystems.bankwallet.core.managers.NftMetadataManager
@@ -91,6 +93,7 @@ import io.horizontalsystems.bankwallet.core.storage.BlockchainSettingsStorage
 import io.horizontalsystems.bankwallet.core.storage.EnabledWalletsStorage
 import io.horizontalsystems.bankwallet.core.storage.EvmSyncSourceStorage
 import io.horizontalsystems.bankwallet.core.storage.MoneroNodeStorage
+import io.horizontalsystems.bankwallet.core.storage.OxyraNodeStorage
 import io.horizontalsystems.bankwallet.core.storage.NftStorage
 import io.horizontalsystems.bankwallet.core.storage.RestoreSettingsStorage
 import io.horizontalsystems.bankwallet.core.storage.SpamAddressStorage
@@ -198,6 +201,9 @@ class App : CoreApp(), WorkConfiguration.Provider, ImageLoaderFactory {
         lateinit var solanaRpcSourceManager: SolanaRpcSourceManager
         lateinit var moneroNodeManager: MoneroNodeManager
         lateinit var moneroNodeStorage: MoneroNodeStorage
+        lateinit var oxyraNodeManager: OxyraNodeManager
+        lateinit var oxyraNodeStorage: OxyraNodeStorage
+        lateinit var oxyraBirthdayProvider: OxyraBirthdayProvider
         lateinit var nftMetadataManager: NftMetadataManager
         lateinit var nftAdapterManager: NftAdapterManager
         lateinit var nftMetadataSyncer: NftMetadataSyncer
@@ -296,6 +302,9 @@ class App : CoreApp(), WorkConfiguration.Provider, ImageLoaderFactory {
         moneroNodeStorage = MoneroNodeStorage(appDatabase)
         moneroNodeManager = MoneroNodeManager(blockchainSettingsStorage, moneroNodeStorage,marketKit)
 
+        oxyraNodeStorage = OxyraNodeStorage(appDatabase)
+        oxyraNodeManager = OxyraNodeManager(blockchainSettingsStorage, oxyraNodeStorage, marketKit)
+
         tronKitManager = TronKitManager(appConfigProvider, backgroundManager)
         tonKitManager = TonKitManager(backgroundManager)
         stellarKitManager = StellarKitManager(backgroundManager)
@@ -360,7 +369,8 @@ class App : CoreApp(), WorkConfiguration.Provider, ImageLoaderFactory {
 
         zcashBirthdayProvider = ZcashBirthdayProvider(this)
         moneroBirthdayProvider = MoneroBirthdayProvider()
-        restoreSettingsManager = RestoreSettingsManager(restoreSettingsStorage, zcashBirthdayProvider, moneroBirthdayProvider)
+        oxyraBirthdayProvider = OxyraBirthdayProvider()
+        restoreSettingsManager = RestoreSettingsManager(restoreSettingsStorage, zcashBirthdayProvider, moneroBirthdayProvider, oxyraBirthdayProvider)
 
         evmLabelManager = EvmLabelManager(
             EvmLabelProvider(),
@@ -383,7 +393,8 @@ class App : CoreApp(), WorkConfiguration.Provider, ImageLoaderFactory {
             coinManager = coinManager,
             evmLabelManager = evmLabelManager,
             localStorage = localStorage,
-            moneroNodeManager = moneroNodeManager
+            moneroNodeManager = moneroNodeManager,
+            oxyraNodeManager = oxyraNodeManager
         )
         adapterManager = AdapterManager(
             walletManager,
@@ -395,6 +406,7 @@ class App : CoreApp(), WorkConfiguration.Provider, ImageLoaderFactory {
             tonKitManager,
             stellarKitManager,
             moneroNodeManager,
+            oxyraNodeManager,
             restoreSettingsManager
         )
         transactionAdapterManager = TransactionAdapterManager(adapterManager, adapterFactory)
@@ -485,7 +497,9 @@ class App : CoreApp(), WorkConfiguration.Provider, ImageLoaderFactory {
             solanaRpcSourceManager = solanaRpcSourceManager,
             moneroNodeManager = moneroNodeManager,
             moneroNodeStorage = moneroNodeStorage,
-            contactsRepository = contactsRepository
+            oxyraNodeManager = oxyraNodeManager,
+            oxyraNodeStorage = oxyraNodeStorage,
+            contactsRepository = contactsRepository,
         )
 
         tonConnectManager = TonConnectManager(

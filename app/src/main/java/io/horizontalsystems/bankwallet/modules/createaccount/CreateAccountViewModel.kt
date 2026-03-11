@@ -17,6 +17,7 @@ import io.horizontalsystems.bankwallet.entities.AccountOrigin
 import io.horizontalsystems.bankwallet.entities.AccountType
 import io.horizontalsystems.bankwallet.entities.DataState
 import io.horizontalsystems.bankwallet.entities.normalizeNFKD
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.modules.createaccount.CreateAccountModule.Kind.Mnemonic12
 import io.horizontalsystems.marketkit.models.BlockchainType
 import io.horizontalsystems.marketkit.models.TokenQuery
@@ -74,6 +75,7 @@ class CreateAccountViewModel(
         activateDefaultWallets(account)
         predefinedBlockchainSettingsProvider.prepareNew(account, BlockchainType.Zcash)
         predefinedBlockchainSettingsProvider.prepareNew(account, BlockchainType.Monero)
+        predefinedBlockchainSettingsProvider.prepareNew(account, OxyraBlockchainType)
         success = accountType
     }
 
@@ -144,6 +146,7 @@ class CreateAccountViewModel(
             TokenQuery(BlockchainType.Bitcoin, TokenType.Derived(TokenType.Derivation.Bip84)),
             TokenQuery(BlockchainType.Ethereum, TokenType.Native),
             TokenQuery(BlockchainType.Monero, TokenType.Native),
+            TokenQuery(OxyraBlockchainType, TokenType.Native),
             TokenQuery(BlockchainType.Tron, TokenType.Native),
             TokenQuery(BlockchainType.BinanceSmartChain, TokenType.Native),
             TokenQuery(BlockchainType.Tron, TokenType.Eip20("TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t")),//USDT(TRC20)

@@ -65,6 +65,7 @@ import io.horizontalsystems.bankwallet.ui.compose.components.subhead2_lucian
 import io.horizontalsystems.bankwallet.uiv3.components.HSScaffold
 import io.horizontalsystems.bankwallet.uiv3.components.bottomsheet.BottomSheetContent
 import io.horizontalsystems.core.helpers.HudHelper
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.marketkit.models.BlockchainType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -145,6 +146,7 @@ private fun RestoreLocalNavHost(
                     when (token.blockchainType) {
                         BlockchainType.Zcash -> navController.navigate("zcash_configure")
                         BlockchainType.Monero -> navController.navigate("monero_configure")
+                        OxyraBlockchainType -> navController.navigate("oxyra_configure")
                         else -> Unit
                     }
                 },
@@ -167,6 +169,19 @@ private fun RestoreLocalNavHost(
         composablePage("monero_configure") {
             RestoreBirthdayHeightScreen(
                 blockchainType = BlockchainType.Monero,
+                onCloseWithResult = { config ->
+                    mainViewModel.setBirthdayHeightConfig(config)
+                    navController.popBackStack()
+                },
+                onCloseClick = {
+                    mainViewModel.cancelBirthdayHeightConfig = true
+                    navController.popBackStack()
+                }
+            )
+        }
+        composablePage("oxyra_configure") {
+            RestoreBirthdayHeightScreen(
+                blockchainType = OxyraBlockchainType,
                 onCloseWithResult = { config ->
                     mainViewModel.setBirthdayHeightConfig(config)
                     navController.popBackStack()

@@ -1,6 +1,7 @@
 package io.horizontalsystems.bankwallet.entities
 
 import android.os.Parcelable
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bitcoincore.core.purpose
 import io.horizontalsystems.bitcoincore.transactions.scripts.ScriptType
 import io.horizontalsystems.hdwalletkit.HDWallet
@@ -24,6 +25,13 @@ class MoneroWatchAddress(
     val viewKey: String,
     val height: Long?
 ): Address(address, blockchainType = BlockchainType.Monero)
+
+@Parcelize
+class OxyraWatchAddress(
+    val address: String,
+    val viewKey: String,
+    val height: Long?
+): Address(address, blockchainType = OxyraBlockchainType)
 
 class BitcoinAddress(
     hex: String,
@@ -64,6 +72,7 @@ val BitcoinAddress.tokenType: TokenType
         BlockchainType.Ton,
         BlockchainType.Stellar,
         BlockchainType.Monero,
+        OxyraBlockchainType,
         is BlockchainType.Unsupported,
         null -> TokenType.Unsupported("", "")
     }

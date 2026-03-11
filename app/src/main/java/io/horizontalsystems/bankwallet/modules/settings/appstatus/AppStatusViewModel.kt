@@ -9,7 +9,9 @@ import io.horizontalsystems.bankwallet.core.IWalletManager
 import io.horizontalsystems.bankwallet.core.ViewModelUiState
 import io.horizontalsystems.bankwallet.core.adapters.BaseTonAdapter
 import io.horizontalsystems.bankwallet.core.adapters.BitcoinBaseAdapter
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.adapters.MoneroAdapter
+import io.horizontalsystems.bankwallet.core.adapters.OxyraAdapter
 import io.horizontalsystems.bankwallet.core.adapters.zcash.ZcashAdapter
 import io.horizontalsystems.bankwallet.core.managers.BtcBlockchainManager
 import io.horizontalsystems.bankwallet.core.managers.EvmBlockchainManager
@@ -205,6 +207,13 @@ class AppStatusViewModel(
                 }
             }
 
+        walletManager.activeWallets.firstOrNull { it.token.blockchainType == OxyraBlockchainType }
+            ?.let { wallet ->
+                adapterManager.getAdapterForWallet<OxyraAdapter>(wallet)?.let { adapter ->
+                    blockchainStatus["Oxyra"] = adapter.statusInfo
+                }
+            }
+
         tronKitManager.statusInfo?.let { statusInfo ->
             blockchainStatus["Tron"] = statusInfo
         }
@@ -277,6 +286,15 @@ class AppStatusViewModel(
                 adapterManager.getAdapterForWallet<MoneroAdapter>(wallet)?.let { adapter ->
                     val title = if (blocks.isEmpty()) "Blockchain Status" else null
                     val block = getBlockchainInfoBlock(title, "Monero", adapter.statusInfo)
+                    blocks.add(block)
+                }
+            }
+
+        walletManager.activeWallets.firstOrNull { it.token.blockchainType == OxyraBlockchainType }
+            ?.let { wallet ->
+                adapterManager.getAdapterForWallet<OxyraAdapter>(wallet)?.let { adapter ->
+                    val title = if (blocks.isEmpty()) "Blockchain Status" else null
+                    val block = getBlockchainInfoBlock(title, "Oxyra", adapter.statusInfo)
                     blocks.add(block)
                 }
             }

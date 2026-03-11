@@ -9,7 +9,9 @@ import io.horizontalsystems.bankwallet.core.adapters.ECashAdapter
 import io.horizontalsystems.bankwallet.core.adapters.LitecoinAdapter
 import io.horizontalsystems.bankwallet.core.adapters.Trc20Adapter
 import io.horizontalsystems.bankwallet.core.adapters.toMoneroSeed
+import io.horizontalsystems.bankwallet.core.adapters.toOxyraSeed
 import io.horizontalsystems.bankwallet.core.adapters.zcash.ZcashAdapter
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.isEvm
 import io.horizontalsystems.bankwallet.core.managers.NoActiveAccount
 import io.horizontalsystems.bankwallet.entities.transactionrecords.tron.TronApproveTransactionRecord
@@ -20,6 +22,7 @@ import io.horizontalsystems.marketkit.models.BlockchainType
 import io.horizontalsystems.marketkit.models.Token
 import io.horizontalsystems.marketkit.models.TokenType
 import io.horizontalsystems.monerokit.MoneroKit
+import io.horizontalsystems.oxyrakit.OxyraKit
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.math.BigDecimal
@@ -111,6 +114,10 @@ object SwapHelper {
 
                 BlockchainType.Monero -> {
                     MoneroKit.getAddress(account.type.toMoneroSeed(), 0, 1)
+                }
+
+                OxyraBlockchainType -> {
+                    OxyraKit.getAddress(account.type.toOxyraSeed(), 0, 1)
                 }
 
                 BlockchainType.Zcash -> {

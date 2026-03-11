@@ -1,0 +1,7 @@
+[
+{
+  "directory": "/Users/nikhilbura/unstoppable-wallet-android/oxyrakit/.cxx/Debug/5g1p1v3y/arm64-v8a",
+  "command": "/Users/nikhilbura/Library/Android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++ --target=aarch64-none-linux-android27 --sysroot=/Users/nikhilbura/Library/Android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/darwin-x86_64/sysroot -Doxyrujo_EXPORTS -I/Users/nikhilbura/unstoppable-wallet-android/oxyrakit/external-libs/include -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security  -std=c++17 -fno-limit-debug-info  -fPIC -o CMakeFiles/oxyrujo.dir/src/main/cpp/monerujo.cpp.o -c /Users/nikhilbura/unstoppable-wallet-android/oxyrakit/src/main/cpp/monerujo.cpp",
+  "file": "/Users/nikhilbura/unstoppable-wallet-android/oxyrakit/src/main/cpp/monerujo.cpp"
+}
+]

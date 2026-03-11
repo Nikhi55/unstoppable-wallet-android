@@ -8,16 +8,19 @@ import io.horizontalsystems.bankwallet.core.stats.StatEvent
 import io.horizontalsystems.bankwallet.core.stats.StatPage
 import io.horizontalsystems.bankwallet.core.stats.stat
 import io.horizontalsystems.bankwallet.core.stats.statAccountType
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.entities.AccountType
 import io.horizontalsystems.bankwallet.entities.Address
 import io.horizontalsystems.bankwallet.entities.BitcoinAddress
 import io.horizontalsystems.bankwallet.entities.DataState
 import io.horizontalsystems.bankwallet.entities.MoneroWatchAddress
+import io.horizontalsystems.bankwallet.entities.OxyraWatchAddress
 import io.horizontalsystems.bankwallet.entities.tokenType
 import io.horizontalsystems.bankwallet.modules.address.AddressParserChain
 import io.horizontalsystems.hdwalletkit.HDExtendedKey
 import io.horizontalsystems.marketkit.models.BlockchainType
 import io.horizontalsystems.monerokit.MoneroKit
+import io.horizontalsystems.oxyrakit.OxyraKit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.ensureActive
@@ -106,6 +109,12 @@ class WatchAddressViewModel(
                                 parsedAddress.height?.let {
                                     birthdayHeight = it
                                 }
+                            } else if (parsedAddress is OxyraWatchAddress) {
+                                setAddress(parsedAddress)
+                                onEnterViewKey(parsedAddress.viewKey)
+                                parsedAddress.height?.let {
+                                    birthdayHeight = it
+                                }
                             } else {
                                 setAddress(parsedAddress)
                             }
@@ -144,7 +153,11 @@ class WatchAddressViewModel(
         emitState()
 
         try {
-            MoneroKit.validatePrivateViewKey(key, address.hex)
+            if (type == Type.OxyraAddress) {
+                OxyraKit.validatePrivateViewKey(key, address.hex)
+            } else {
+                MoneroKit.validatePrivateViewKey(key, address.hex)
+            }
             viewKeyState = DataState.Success(key)
             viewKey = key
         } catch (ex: Exception) {
@@ -228,6 +241,7 @@ class WatchAddressViewModel(
         BlockchainType.Ton -> Type.TonAddress
         BlockchainType.Stellar -> Type.StellarAddress
         BlockchainType.Monero -> Type.MoneroAddress
+        OxyraBlockchainType -> Type.OxyraAddress
         BlockchainType.Zcash,
         is BlockchainType.Unsupported,
         null -> Type.Unsupported
@@ -246,7 +260,7 @@ class WatchAddressViewModel(
     }
 
     fun onClickWatch() {
-        if (type == Type.MoneroAddress && birthdayHeight == null) {
+        if ((type == Type.MoneroAddress || type == Type.OxyraAddress) && birthdayHeight == null) {
             openBirthdayHeightScreen = true
             emitState()
             return
@@ -282,6 +296,7 @@ class WatchAddressViewModel(
             Type.TonAddress -> SubmitButtonType.Watch(address != null)
             Type.StellarAddress -> SubmitButtonType.Watch(address != null)
             Type.MoneroAddress -> SubmitButtonType.Watch(address != null && viewKey != null)
+            Type.OxyraAddress -> SubmitButtonType.Watch(address != null && viewKey != null)
             Type.Unsupported -> SubmitButtonType.Watch(false)
         }
     }
@@ -311,6 +326,10 @@ class WatchAddressViewModel(
             AccountType.MoneroWatchAccount(it.hex, viewKey!!, birthdayHeight ?: 1)
         }
 
+        Type.OxyraAddress -> address?.let {
+            AccountType.MoneroWatchAccount(it.hex, viewKey!!, birthdayHeight ?: 1)
+        }
+
         Type.Unsupported -> throw IllegalStateException("Unsupported address type")
     }
 
@@ -323,6 +342,7 @@ class WatchAddressViewModel(
         TonAddress,
         StellarAddress,
         MoneroAddress,
+        OxyraAddress,
         Unsupported
     }
 }

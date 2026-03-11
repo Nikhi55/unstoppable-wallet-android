@@ -1,6 +1,7 @@
 package io.horizontalsystems.bankwallet.modules.syncerror
 
 import io.horizontalsystems.bankwallet.core.IAdapterManager
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.managers.BtcBlockchainManager
 import io.horizontalsystems.bankwallet.core.managers.EvmBlockchainManager
 import io.horizontalsystems.bankwallet.entities.Wallet
@@ -17,6 +18,8 @@ class SyncErrorService(
     val blockchainWrapper by lazy {
         if (wallet.token.blockchainType == BlockchainType.Monero) {
             SyncErrorModule.BlockchainWrapper.Monero
+        } else if (wallet.token.blockchainType == OxyraBlockchainType) {
+            SyncErrorModule.BlockchainWrapper.Oxyra
         } else {
             btcBlockchainManager.blockchain(wallet.token.blockchainType)?.let {
                 SyncErrorModule.BlockchainWrapper.Bitcoin(it)

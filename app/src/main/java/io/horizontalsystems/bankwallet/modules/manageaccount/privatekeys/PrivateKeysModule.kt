@@ -6,6 +6,7 @@ import io.horizontalsystems.bankwallet.core.App
 import io.horizontalsystems.bankwallet.entities.Account
 import io.horizontalsystems.bankwallet.modules.manageaccount.showextendedkey.ShowExtendedKeyModule
 import io.horizontalsystems.bankwallet.modules.manageaccount.showmonerokey.ShowMoneroKeyModule.MoneroKeys
+import io.horizontalsystems.bankwallet.modules.manageaccount.showoxyrakey.ShowOxyraKeyModule.OxyraKeys
 import io.horizontalsystems.hdwalletkit.HDExtendedKey
 
 object PrivateKeysModule {
@@ -22,7 +23,8 @@ object PrivateKeysModule {
         val bip32RootKey: ExtendedKey? = null,
         val accountExtendedPrivateKey: ExtendedKey? = null,
         val stellarSecretKey: String? = null,
-        val moneroKeys: MoneroKeys? = null
+        val moneroKeys: MoneroKeys? = null,
+        val oxyraKeys: OxyraKeys? = null
     )
 
     data class ExtendedKey(

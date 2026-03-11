@@ -1,10 +1,12 @@
 package io.horizontalsystems.bankwallet.core.managers
 
 import io.horizontalsystems.bankwallet.core.App
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.adapters.zcash.ZcashAdapter
 import io.horizontalsystems.core.helpers.DateHelper
 import io.horizontalsystems.marketkit.models.BlockchainType
 import io.horizontalsystems.monerokit.MoneroKit
+import io.horizontalsystems.oxyrakit.OxyraKit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.util.Calendar
@@ -17,6 +19,7 @@ object BirthdayHeightHelper {
     fun minBirthdayHeight(blockchainType: BlockchainType): Long = when (blockchainType) {
         BlockchainType.Zcash -> 420_000L
         BlockchainType.Monero -> 0L
+        OxyraBlockchainType -> 0L
         else -> 0L
     }
 
@@ -25,6 +28,7 @@ object BirthdayHeightHelper {
         val startYear = when (blockchainType) {
             BlockchainType.Zcash -> 2018
             BlockchainType.Monero -> 2014
+            OxyraBlockchainType -> 2025
             else -> 2009
         }
         return (startYear..currentYear).toList()
@@ -52,6 +56,9 @@ object BirthdayHeightHelper {
             BlockchainType.Monero -> {
                 MoneroKit.dateForRestoreHeight(height)
             }
+            OxyraBlockchainType -> {
+                OxyraKit.dateForRestoreHeight(height)
+            }
             else -> null
         }
     }
@@ -74,6 +81,9 @@ object BirthdayHeightHelper {
             }
             BlockchainType.Monero -> {
                 MoneroKit.restoreHeightForDate(selectedDate)
+            }
+            OxyraBlockchainType -> {
+                OxyraKit.restoreHeightForDate(selectedDate)
             }
             else -> null
         }

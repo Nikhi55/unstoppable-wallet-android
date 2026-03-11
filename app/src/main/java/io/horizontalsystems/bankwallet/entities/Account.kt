@@ -45,19 +45,24 @@ data class Account(
     @IgnoredOnParcel
     val nonStandard: Boolean by lazy {
         if (type is AccountType.Mnemonic) {
-            val words = type.words.joinToString(separator = " ")
-            val passphrase = type.passphrase
-            val normalizedWords = words.normalizeNFKD()
-            val normalizedPassphrase = passphrase.normalizeNFKD()
+            // 25-word seeds are native Oxyra/Monero mnemonics, not BIP39
+            if (type.words.size == 25) {
+                false
+            } else {
+                val words = type.words.joinToString(separator = " ")
+                val passphrase = type.passphrase
+                val normalizedWords = words.normalizeNFKD()
+                val normalizedPassphrase = passphrase.normalizeNFKD()
 
-            when {
-                words != normalizedWords -> true
-                passphrase != normalizedPassphrase -> true
-                else -> try {
-                    Mnemonic().validateStrict(type.words)
-                    false
-                } catch (exception: Exception) {
-                    true
+                when {
+                    words != normalizedWords -> true
+                    passphrase != normalizedPassphrase -> true
+                    else -> try {
+                        Mnemonic().validateStrict(type.words)
+                        false
+                    } catch (exception: Exception) {
+                        true
+                    }
                 }
             }
         } else {
@@ -68,9 +73,14 @@ data class Account(
     @IgnoredOnParcel
     val nonRecommended: Boolean by lazy {
         if (type is AccountType.Mnemonic) {
-            val englishWords = WordList.wordList(Language.English).validWords(type.words)
-            val standardPassphrase = PassphraseValidator().containsValidCharacters(type.passphrase)
-            !englishWords || !standardPassphrase
+            // 25-word seeds are native Oxyra/Monero mnemonics, not BIP39
+            if (type.words.size == 25) {
+                false
+            } else {
+                val englishWords = WordList.wordList(Language.English).validWords(type.words)
+                val standardPassphrase = PassphraseValidator().containsValidCharacters(type.passphrase)
+                !englishWords || !standardPassphrase
+            }
         } else {
             false
         }

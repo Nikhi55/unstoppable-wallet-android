@@ -1,5 +1,6 @@
 package io.horizontalsystems.bankwallet.modules.address
 
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.supported
 import io.horizontalsystems.bitcoincash.MainNetBitcoinCash
 import io.horizontalsystems.bitcoinkit.MainNet
@@ -81,6 +82,10 @@ class AddressHandlerFactory(
 
             BlockchainType.Monero -> {
                 addressHandlers.add(AddressHandlerMonero())
+            }
+
+            OxyraBlockchainType -> {
+                addressHandlers.add(AddressHandlerOxyra())
             }
 
             is BlockchainType.Unsupported -> {

@@ -7,3 +7,6 @@ include ':subscriptions-core'
 include ':subscriptions-google-play'
 include ':subscriptions-dev'
 include ':subscriptions-fdroid'
+include ':oxyrakit'
+include ':marketkit'
+project(':marketkit').projectDir = new File('marketkit-local/marketkit')

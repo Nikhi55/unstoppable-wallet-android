@@ -14,6 +14,7 @@ import io.horizontalsystems.core.IThirdKeyboard
 import io.horizontalsystems.hdwalletkit.Language
 import io.horizontalsystems.hdwalletkit.Mnemonic
 import io.horizontalsystems.hdwalletkit.WordList
+import io.horizontalsystems.oxyrakit.CakeWalletStyleConverter
 
 class RestoreMnemonicViewModel(
     accountFactory: IAccountFactory,
@@ -38,6 +39,9 @@ class RestoreMnemonicViewModel(
     private var mnemonicWordList = WordList.wordListStrict(language)
 
 
+    private val moneroWordSet = CakeWalletStyleConverter.MONERO_WORDLIST.toSet()
+    private fun isMoneroWord(word: String): Boolean = word in moneroWordSet
+
     private val regex = Regex("\\S+")
 
     val defaultName = accountFactory.getNextAccountName()
@@ -61,14 +65,24 @@ class RestoreMnemonicViewModel(
 
     private fun processText() {
         wordItems = wordItems(text)
-        invalidWordItems = wordItems.filter { !mnemonicWordList.validWord(it.word.normalizeNFKD(), false) }
+
+        // For 25-word input, validate against Monero wordlist instead of BIP39
+        val isOxyraMoneroSeed = wordItems.size == 25
+        invalidWordItems = if (isOxyraMoneroSeed) {
+            wordItems.filter { !isMoneroWord(it.word) }
+        } else {
+            wordItems.filter { !mnemonicWordList.validWord(it.word.normalizeNFKD(), false) }
+        }
 
         val wordItemWithCursor = wordItems.find {
             it.range.contains(cursorPosition - 1)
         }
 
         val invalidWordItemsExcludingCursoredPartiallyValid = when {
-            wordItemWithCursor != null && mnemonicWordList.validWord(wordItemWithCursor.word.normalizeNFKD(), true) -> {
+            wordItemWithCursor != null && (
+                mnemonicWordList.validWord(wordItemWithCursor.word.normalizeNFKD(), true) ||
+                (isOxyraMoneroSeed && isMoneroWord(wordItemWithCursor.word))
+            ) -> {
                 invalidWordItems.filter { it != wordItemWithCursor }
             }
             else -> invalidWordItems
@@ -118,11 +132,13 @@ class RestoreMnemonicViewModel(
     }
 
     fun onProceed() {
+        val allowedWordCounts = Mnemonic.EntropyStrength.values().map { it.wordCount } + 25
+
         when {
             invalidWordItems.isNotEmpty() -> {
                 invalidWordRanges = invalidWordItems.map { it.range }
             }
-            wordItems.size !in (Mnemonic.EntropyStrength.values().map { it.wordCount }) -> {
+            wordItems.size !in allowedWordCounts -> {
                 error = Translator.getString(R.string.Restore_Error_MnemonicWordCount, wordItems.size)
             }
             passphraseEnabled && passphrase.isBlank() -> {
@@ -131,10 +147,15 @@ class RestoreMnemonicViewModel(
             else -> {
                 try {
                     val words = wordItems.map { it.word.normalizeNFKD() }
-                    wordsManager.validateChecksumStrict(words)
-
-                    accountType = AccountType.Mnemonic(words, passphrase.normalizeNFKD())
-                    error = null
+                    if (words.size == 25) {
+                        // 25-word Oxyra/Monero seed — skip BIP39 checksum validation
+                        accountType = AccountType.Mnemonic(words, passphrase.normalizeNFKD())
+                        error = null
+                    } else {
+                        wordsManager.validateChecksumStrict(words)
+                        accountType = AccountType.Mnemonic(words, passphrase.normalizeNFKD())
+                        error = null
+                    }
                 } catch (checksumException: Exception) {
                     error = Translator.getString(R.string.Restore_InvalidChecksum)
                 }

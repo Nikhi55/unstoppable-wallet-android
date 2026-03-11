@@ -11,6 +11,7 @@ import androidx.lifecycle.viewModelScope
 import io.horizontalsystems.bankwallet.R
 import io.horizontalsystems.bankwallet.core.Clearable
 import io.horizontalsystems.bankwallet.core.description
+import io.horizontalsystems.bankwallet.core.imageResource
 import io.horizontalsystems.bankwallet.core.imageUrl
 import io.horizontalsystems.bankwallet.modules.market.ImageSource
 import io.horizontalsystems.marketkit.models.Blockchain
@@ -55,7 +56,8 @@ class RestoreBlockchainsViewModel(
         item: RestoreBlockchainsService.Item,
     ) = CoinViewItem(
         item = item.blockchain,
-        imageSource = ImageSource.Remote(item.blockchain.type.imageUrl, R.drawable.ic_platform_placeholder_32),
+        imageSource = item.blockchain.type.imageResource?.let { ImageSource.Local(it) }
+            ?: ImageSource.Remote(item.blockchain.type.imageUrl, R.drawable.ic_platform_placeholder_32),
         title = item.blockchain.name,
         subtitle = item.blockchain.description,
         enabled = item.enabled,

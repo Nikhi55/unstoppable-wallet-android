@@ -3,6 +3,7 @@ package io.horizontalsystems.bankwallet.modules.multiswap.providers
 import android.util.Base64
 import com.google.gson.JsonElement
 import io.horizontalsystems.bankwallet.core.App
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.derivation
 import io.horizontalsystems.bankwallet.core.isEvm
 import io.horizontalsystems.bankwallet.core.managers.APIClient
@@ -64,6 +65,7 @@ class USwapProvider(private val provider: UProvider) : IMultiSwapProvider {
         "dash" to BlockchainType.Dash,
         "ecash" to BlockchainType.ECash,
         "monero" to BlockchainType.Monero,
+        "oxyra" to OxyraBlockchainType,
         "100" to BlockchainType.Gnosis,
 //        "" to BlockchainType.Fantom,
 //        "" to BlockchainType.ZkSync,
@@ -171,6 +173,12 @@ class USwapProvider(private val provider: UProvider) : IMultiSwapProvider {
                 }
 
                 BlockchainType.Monero -> {
+                    App.marketKit.token(TokenQuery(blockchainType, TokenType.Native))?.let {
+                        assetsMap[it] = token.identifier
+                    }
+                }
+
+                OxyraBlockchainType -> {
                     App.marketKit.token(TokenQuery(blockchainType, TokenType.Native))?.let {
                         assetsMap[it] = token.identifier
                     }
@@ -445,6 +453,26 @@ class USwapProvider(private val provider: UProvider) : IMultiSwapProvider {
                 }
 
                 return SendTransactionData.Monero(
+                    address = bestRoute.inboundAddress,
+                    amount = amountIn,
+                    memo = bestRoute.txExtraAttribute?.get("memo")
+                )
+            }
+
+            OxyraBlockchainType -> {
+                val simpleOxyraTransactionProviders = listOf(
+                    UProvider.Near,
+                    UProvider.QuickEx,
+                    UProvider.LetsExchange,
+                    UProvider.StealthEx,
+                    UProvider.Swapuz
+                )
+
+                if (!simpleOxyraTransactionProviders.contains(provider)) {
+                    throw IllegalStateException("Only simple OXRX tx providers are supported")
+                }
+
+                return SendTransactionData.Oxyra(
                     address = bestRoute.inboundAddress,
                     amount = amountIn,
                     memo = bestRoute.txExtraAttribute?.get("memo")

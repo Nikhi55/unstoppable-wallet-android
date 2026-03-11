@@ -12,6 +12,7 @@ import io.horizontalsystems.bankwallet.entities.Wallet
 import io.horizontalsystems.bankwallet.modules.balance.BalanceModule.warningText
 import io.horizontalsystems.bankwallet.ui.compose.TranslatableString
 import io.horizontalsystems.core.helpers.DateHelper
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.marketkit.models.BlockchainType
 import io.horizontalsystems.marketkit.models.Token
 import java.math.BigDecimal
@@ -131,7 +132,8 @@ class BalanceViewItemFactory {
         BlockchainType.Litecoin,
         BlockchainType.Dash,
         BlockchainType.Zcash,
-        BlockchainType.Monero -> true
+        BlockchainType.Monero,
+        OxyraBlockchainType -> true
 
         else -> false
     }
@@ -143,7 +145,8 @@ class BalanceViewItemFactory {
         BlockchainType.Litecoin,
         BlockchainType.Dash,
         BlockchainType.Zcash,
-        BlockchainType.Monero -> 10
+        BlockchainType.Monero,
+        OxyraBlockchainType -> 10
 
         BlockchainType.Ethereum,
         BlockchainType.BinanceSmartChain,

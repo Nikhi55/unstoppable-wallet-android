@@ -6,6 +6,7 @@ import io.horizontalsystems.bankwallet.core.eligibleTokens
 import io.horizontalsystems.bankwallet.core.isDefault
 import io.horizontalsystems.bankwallet.core.isNative
 import io.horizontalsystems.bankwallet.core.managers.RestoreSettings
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.order
 import io.horizontalsystems.bankwallet.core.restoreSettingTypes
 import io.horizontalsystems.bankwallet.entities.Account
@@ -128,7 +129,7 @@ class ManageWalletsService(
     }
 
     private fun hasInfo(token: Token, enabled: Boolean) = when (token.type) {
-        is TokenType.Native -> token.blockchainType in listOf(BlockchainType.Zcash, BlockchainType.Monero) && enabled
+        is TokenType.Native -> token.blockchainType in listOf(BlockchainType.Zcash, BlockchainType.Monero, OxyraBlockchainType) && enabled
         is TokenType.Derived,
         is TokenType.AddressTyped,
         is TokenType.Eip20,

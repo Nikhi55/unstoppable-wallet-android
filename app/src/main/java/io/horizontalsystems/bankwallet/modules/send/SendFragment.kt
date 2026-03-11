@@ -27,6 +27,9 @@ import io.horizontalsystems.bankwallet.modules.send.evm.SendEvmViewModel
 import io.horizontalsystems.bankwallet.modules.send.monero.SendMoneroModule
 import io.horizontalsystems.bankwallet.modules.send.monero.SendMoneroScreen
 import io.horizontalsystems.bankwallet.modules.send.monero.SendMoneroViewModel
+import io.horizontalsystems.bankwallet.modules.send.oxyra.SendOxyraModule
+import io.horizontalsystems.bankwallet.modules.send.oxyra.SendOxyraScreen
+import io.horizontalsystems.bankwallet.modules.send.oxyra.SendOxyraViewModel
 import io.horizontalsystems.bankwallet.modules.send.solana.SendSolanaModule
 import io.horizontalsystems.bankwallet.modules.send.solana.SendSolanaScreen
 import io.horizontalsystems.bankwallet.modules.send.solana.SendSolanaViewModel
@@ -42,6 +45,7 @@ import io.horizontalsystems.bankwallet.modules.send.tron.SendTronViewModel
 import io.horizontalsystems.bankwallet.modules.send.zcash.SendZCashModule
 import io.horizontalsystems.bankwallet.modules.send.zcash.SendZCashScreen
 import io.horizontalsystems.bankwallet.modules.send.zcash.SendZCashViewModel
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.core.findNavController
 import io.horizontalsystems.marketkit.models.BlockchainType
 import kotlinx.parcelize.Parcelize
@@ -219,6 +223,23 @@ class SendFragment : BaseFragment() {
                                 title,
                                 findNavController(),
                                 sendMoneroViewModel,
+                                amountInputModeViewModel,
+                                sendEntryPointDestId,
+                                amount,
+                                memo,
+                                riskyAddress = riskyAddress
+                            )
+                        }
+                    }
+
+                    OxyraBlockchainType -> {
+                        val factory = SendOxyraModule.Factory(wallet, address, hideAddress)
+                        val sendOxyraViewModel by navGraphViewModels<SendOxyraViewModel>(R.id.sendXFragment) { factory }
+                        setContent {
+                            SendOxyraScreen(
+                                title,
+                                findNavController(),
+                                sendOxyraViewModel,
                                 amountInputModeViewModel,
                                 sendEntryPointDestId,
                                 amount,

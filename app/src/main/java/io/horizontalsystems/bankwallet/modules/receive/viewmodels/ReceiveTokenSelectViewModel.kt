@@ -13,7 +13,9 @@ import io.horizontalsystems.bankwallet.core.eligibleTokens
 import io.horizontalsystems.bankwallet.core.isDefault
 import io.horizontalsystems.bankwallet.core.managers.CurrencyManager
 import io.horizontalsystems.bankwallet.core.managers.MarketKitWrapper
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.managers.MoneroBirthdayProvider
+import io.horizontalsystems.bankwallet.core.managers.OxyraBirthdayProvider
 import io.horizontalsystems.bankwallet.core.managers.RestoreSettings
 import io.horizontalsystems.bankwallet.core.managers.RestoreSettingsManager
 import io.horizontalsystems.bankwallet.core.managers.ZcashBirthdayProvider
@@ -40,6 +42,7 @@ class ReceiveTokenSelectViewModel(
     private val marketKit: MarketKitWrapper,
     private val zcashBirthdayProvider: ZcashBirthdayProvider,
     private val moneroBirthdayProvider: MoneroBirthdayProvider,
+    private val oxyraBirthdayProvider: OxyraBirthdayProvider,
     private val restoreSettingsManager: RestoreSettingsManager
 ) : ViewModel() {
     private var fullCoins: List<FullCoin> = listOf()
@@ -178,7 +181,7 @@ class ReceiveTokenSelectViewModel(
             return it
         }
 
-        if (token.blockchainType == BlockchainType.Zcash || token.blockchainType == BlockchainType.Monero) {
+        if (token.blockchainType == BlockchainType.Zcash || token.blockchainType == BlockchainType.Monero || token.blockchainType == OxyraBlockchainType) {
             if (restoreSettingsManager.settings(activeAccount, token.blockchainType).birthdayHeight == null) {
                 val settings = RestoreSettings().apply {
                     birthdayHeight = getBirthdayHeightForNewWallet(token.blockchainType)
@@ -193,6 +196,7 @@ class ReceiveTokenSelectViewModel(
     private fun getBirthdayHeightForNewWallet(blockchainType: BlockchainType): Long? = when (blockchainType) {
         BlockchainType.Zcash -> zcashBirthdayProvider.getLatestCheckpointBlockHeight()
         BlockchainType.Monero -> moneroBirthdayProvider.restoreHeightForNewWallet()
+        OxyraBlockchainType -> oxyraBirthdayProvider.restoreHeightForNewWallet()
         else -> null
     }
 
@@ -243,6 +247,7 @@ class ReceiveTokenSelectViewModel(
                 App.marketKit,
                 App.zcashBirthdayProvider,
                 App.moneroBirthdayProvider,
+                App.oxyraBirthdayProvider,
                 App.restoreSettingsManager
             ) as T
         }

@@ -10,6 +10,8 @@ import io.horizontalsystems.bankwallet.modules.send.address.TonAddressValidator
 import io.horizontalsystems.bankwallet.modules.send.address.TronAddressValidator
 import io.horizontalsystems.bankwallet.modules.send.address.ZcashAddressValidator
 import io.horizontalsystems.bankwallet.modules.send.address.MoneroAddressValidator
+import io.horizontalsystems.bankwallet.modules.send.address.OxyraAddressValidator
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.marketkit.models.BlockchainType
 import io.horizontalsystems.marketkit.models.Token
 
@@ -60,6 +62,10 @@ object AddressValidatorFactory {
 
             is BlockchainType.Monero -> {
                 MoneroAddressValidator()
+            }
+
+            OxyraBlockchainType -> {
+                OxyraAddressValidator()
             }
 
             is BlockchainType.Unsupported -> throw IllegalStateException("Unsupported blockchain type: ${token.blockchainType}")

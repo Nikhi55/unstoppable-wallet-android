@@ -3,6 +3,7 @@ package io.horizontalsystems.bankwallet.core.managers
 import com.google.gson.annotations.SerializedName
 import io.horizontalsystems.bankwallet.R
 import io.horizontalsystems.bankwallet.core.IRestoreSettingsStorage
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.providers.Translator
 import io.horizontalsystems.bankwallet.entities.Account
 import io.horizontalsystems.bankwallet.entities.RestoreSettingRecord
@@ -15,7 +16,8 @@ import kotlinx.coroutines.flow.asSharedFlow
 class RestoreSettingsManager(
         private val storage: IRestoreSettingsStorage,
         private val zcashBirthdayProvider: ZcashBirthdayProvider,
-        private val moneroBirthdayProvider: MoneroBirthdayProvider
+        private val moneroBirthdayProvider: MoneroBirthdayProvider,
+        private val oxyraBirthdayProvider: OxyraBirthdayProvider
 ) {
     private val _settingsUpdatedFlow = MutableSharedFlow<BlockchainType>(replay = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
     val settingsUpdatedFlow = _settingsUpdatedFlow.asSharedFlow()
@@ -60,6 +62,9 @@ class RestoreSettingsManager(
                     }
                     BlockchainType.Monero -> {
                         return moneroBirthdayProvider.restoreHeightForNewWallet().toString()
+                    }
+                    OxyraBlockchainType -> {
+                        return oxyraBirthdayProvider.restoreHeightForNewWallet().toString()
                     }
                     else -> null
                 }

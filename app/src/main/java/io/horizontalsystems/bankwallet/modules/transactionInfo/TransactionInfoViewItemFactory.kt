@@ -9,6 +9,8 @@ import io.horizontalsystems.bankwallet.entities.transactionrecords.bitcoin.Bitco
 import io.horizontalsystems.bankwallet.entities.transactionrecords.bitcoin.BitcoinOutgoingTransactionRecord
 import io.horizontalsystems.bankwallet.entities.transactionrecords.monero.MoneroIncomingTransactionRecord
 import io.horizontalsystems.bankwallet.entities.transactionrecords.monero.MoneroOutgoingTransactionRecord
+import io.horizontalsystems.bankwallet.entities.transactionrecords.oxyra.OxyraIncomingTransactionRecord
+import io.horizontalsystems.bankwallet.entities.transactionrecords.oxyra.OxyraOutgoingTransactionRecord
 import io.horizontalsystems.bankwallet.entities.transactionrecords.evm.ApproveTransactionRecord
 import io.horizontalsystems.bankwallet.entities.transactionrecords.evm.ContractCallTransactionRecord
 import io.horizontalsystems.bankwallet.entities.transactionrecords.evm.ContractCreationTransactionRecord
@@ -471,6 +473,38 @@ class TransactionInfoViewItemFactory(
             }
 
             is MoneroOutgoingTransactionRecord -> {
+                sentToSelf = transaction.sentToSelf
+                itemSections.add(
+                    TransactionViewItemFactoryHelper.getSendSectionItems(
+                        value = transaction.value,
+                        toAddress = transaction.to,
+                        coinPrice = rates[transaction.value.coinUid],
+                        hideAmount = transactionItem.hideAmount,
+                        sentToSelf = transaction.sentToSelf,
+                        blockchainType = blockchainType,
+                    )
+                )
+                addMemoItem(transaction.memo, miscItemsSection)
+                if (!transaction.txKey.isNullOrEmpty()) {
+                    miscItemsSection.add(TransactionInfoViewItem.TransactionSecretKey(transaction.txKey))
+                }
+            }
+
+            is OxyraIncomingTransactionRecord -> {
+                itemSections.add(
+                    TransactionViewItemFactoryHelper.getReceiveSectionItems(
+                        value = transaction.value,
+                        fromAddress = transaction.from,
+                        coinPrice = rates[transaction.value.coinUid],
+                        hideAmount = transactionItem.hideAmount,
+                        blockchainType = blockchainType,
+                        toAddress = transaction.to
+                    )
+                )
+                addMemoItem(transaction.memo, miscItemsSection)
+            }
+
+            is OxyraOutgoingTransactionRecord -> {
                 sentToSelf = transaction.sentToSelf
                 itemSections.add(
                     TransactionViewItemFactoryHelper.getSendSectionItems(

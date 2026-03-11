@@ -63,6 +63,8 @@ enum class StatPage(val key: String) {
     StellarSecretKey("stellar_secret_key"),
     MoneroPrivateKey("monero_private_key"),
     MoneroPublicKey("monero_public_key"),
+    OxyraPrivateKey("oxyra_private_key"),
+    OxyraPublicKey("oxyra_public_key"),
     ExportFull("export_full"),
     ExportFullToFiles("export_full_to_files"),
     ExportWalletToFiles("export_wallet_to_files"),

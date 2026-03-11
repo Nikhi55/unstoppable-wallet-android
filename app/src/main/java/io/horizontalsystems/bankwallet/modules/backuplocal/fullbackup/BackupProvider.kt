@@ -19,7 +19,9 @@ import io.horizontalsystems.bankwallet.core.managers.EvmBlockchainManager
 import io.horizontalsystems.bankwallet.core.managers.EvmSyncSourceManager
 import io.horizontalsystems.bankwallet.core.managers.LanguageManager
 import io.horizontalsystems.bankwallet.core.managers.MarketFavoritesManager
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.managers.MoneroNodeManager
+import io.horizontalsystems.bankwallet.core.managers.OxyraNodeManager
 import io.horizontalsystems.bankwallet.core.managers.RestoreSettings
 import io.horizontalsystems.bankwallet.core.managers.RestoreSettingsManager
 import io.horizontalsystems.bankwallet.core.managers.SolanaRpcSourceManager
@@ -27,6 +29,7 @@ import io.horizontalsystems.bankwallet.core.providers.Translator
 import io.horizontalsystems.bankwallet.core.storage.BlockchainSettingsStorage
 import io.horizontalsystems.bankwallet.core.storage.EvmSyncSourceStorage
 import io.horizontalsystems.bankwallet.core.storage.MoneroNodeStorage
+import io.horizontalsystems.bankwallet.core.storage.OxyraNodeStorage
 import io.horizontalsystems.bankwallet.entities.Account
 import io.horizontalsystems.bankwallet.entities.AccountOrigin
 import io.horizontalsystems.bankwallet.entities.AccountType
@@ -34,6 +37,7 @@ import io.horizontalsystems.bankwallet.entities.BtcRestoreMode
 import io.horizontalsystems.bankwallet.entities.EnabledWallet
 import io.horizontalsystems.bankwallet.entities.LaunchPage
 import io.horizontalsystems.bankwallet.entities.MoneroNodeRecord
+import io.horizontalsystems.bankwallet.entities.OxyraNodeRecord
 import io.horizontalsystems.bankwallet.entities.TransactionDataSortMode
 import io.horizontalsystems.bankwallet.modules.backuplocal.BackupLocalModule
 import io.horizontalsystems.bankwallet.modules.balance.BalanceViewType
@@ -107,6 +111,8 @@ class BackupProvider(
     private val solanaRpcSourceManager: SolanaRpcSourceManager,
     private val moneroNodeManager: MoneroNodeManager,
     private val moneroNodeStorage: MoneroNodeStorage,
+    private val oxyraNodeManager: OxyraNodeManager,
+    private val oxyraNodeStorage: OxyraNodeStorage,
     private val contactsRepository: ContactsRepository
 ) {
     private val encryptDecryptManager by lazy { EncryptDecryptManager() }
@@ -272,6 +278,18 @@ class BackupProvider(
 
         settings.moneroNodes?.selected?.forEach { node ->
             blockchainSettingsStorage.saveMoneroNode(node.url)
+        }
+
+        settings.oxyraNodes?.custom?.forEach { node ->
+            val password = node.password?.let {
+                val decryptedPassword = decrypted(it, passphrase)
+                String(decryptedPassword, Charsets.UTF_8)
+            }
+            oxyraNodeStorage.save(OxyraNodeRecord(node.url, node.login, password, node.trusted))
+        }
+
+        settings.oxyraNodes?.selected?.forEach { node ->
+            blockchainSettingsStorage.saveOxyraNode(node.url)
         }
 
         if (settings.appIcon != (localStorage.appIcon ?: AppIcon.Main).titleText) {
@@ -472,6 +490,13 @@ class BackupProvider(
         }
         val moneroNodes = MoneroNodes(listOf(selectedMoneroNode), customMoneroNodes)
 
+        val selectedOxyraNode = OxyraNodeBackup(OxyraBlockchainType.uid, oxyraNodeManager.currentNode.host, null, null, false)
+        val customOxyraNodes = oxyraNodeStorage.getAll().map { nodeRecord ->
+            val password = nodeRecord.password?.let { encrypted(it, passphrase) }
+            OxyraNodeBackup(OxyraBlockchainType.uid, nodeRecord.url, nodeRecord.username, password, false)
+        }
+        val oxyraNodes = OxyraNodes(listOf(selectedOxyraNode), customOxyraNodes)
+
         val chartIndicators = chartIndicators()
 
         val settings = Settings(
@@ -492,6 +517,7 @@ class BackupProvider(
             evmSyncSources = evmSyncSources,
             solanaSyncSource = solanaSyncSource,
             moneroNodes = moneroNodes,
+            oxyraNodes = oxyraNodes,
         )
 
         val contacts = if (contactsRepository.contacts.isNotEmpty())
@@ -701,6 +727,20 @@ data class MoneroNodes(
     val custom: List<MoneroNodeBackup>
 )
 
+data class OxyraNodeBackup(
+    @SerializedName("blockchain_type_id")
+    val blockchainTypeId: String,
+    val url: String,
+    val login: String?,
+    val password: BackupLocalModule.BackupCrypto?,
+    val trusted: Boolean,
+)
+
+data class OxyraNodes(
+    val selected: List<OxyraNodeBackup>,
+    val custom: List<OxyraNodeBackup>
+)
+
 data class RsiBackup(
     val period: Int,
     val enabled: Boolean
@@ -759,7 +799,9 @@ data class Settings(
     @SerializedName("solana_sync_source")
     val solanaSyncSource: SolanaSyncSource?,
     @SerializedName("monero_nodes")
-    val moneroNodes: MoneroNodes?
+    val moneroNodes: MoneroNodes?,
+    @SerializedName("oxyra_nodes")
+    val oxyraNodes: OxyraNodes?
 )
 
 sealed class RestoreException(message: String) : Exception(message) {

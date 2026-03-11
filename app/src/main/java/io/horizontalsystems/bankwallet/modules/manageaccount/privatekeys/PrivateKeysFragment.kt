@@ -22,6 +22,7 @@ import io.horizontalsystems.bankwallet.entities.Account
 import io.horizontalsystems.bankwallet.modules.manageaccount.evmprivatekey.EvmPrivateKeyFragment
 import io.horizontalsystems.bankwallet.modules.manageaccount.showextendedkey.ShowExtendedKeyFragment
 import io.horizontalsystems.bankwallet.modules.manageaccount.showmonerokey.ShowMoneroKeyFragment
+import io.horizontalsystems.bankwallet.modules.manageaccount.showoxyrakey.ShowOxyraKeyFragment
 import io.horizontalsystems.bankwallet.modules.manageaccount.stellarsecretkey.StellarSecretKeyFragment
 import io.horizontalsystems.bankwallet.modules.manageaccount.ui.KeyActionItem
 import io.horizontalsystems.bankwallet.uiv3.components.HSScaffold
@@ -139,6 +140,24 @@ fun ManageAccountScreen(navController: NavController, account: Account) {
                         stat(
                             page = StatPage.PrivateKeys,
                             event = StatEvent.Open(StatPage.MoneroPrivateKey)
+                        )
+                    }
+                }
+            }
+            viewModel.viewState.oxyraKeys?.let { oxyraKeys ->
+                KeyActionItem(
+                    title = stringResource(id = R.string.PrivateKeys_OxyraPrivateKey),
+                    description = stringResource(id = R.string.PrivateKeys_OxyraPrivateKeyDescription),
+                ) {
+                    navController.authorizedAction {
+                        navController.slideFromRight(
+                            R.id.showOxyraKeyFragment,
+                            ShowOxyraKeyFragment.Input(oxyraKeys)
+                        )
+
+                        stat(
+                            page = StatPage.PrivateKeys,
+                            event = StatEvent.Open(StatPage.OxyraPrivateKey)
                         )
                     }
                 }

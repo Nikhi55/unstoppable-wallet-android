@@ -24,6 +24,8 @@ import io.horizontalsystems.marketkit.models.TopPlatform
 import io.horizontalsystems.nftkit.models.NftType
 import java.math.BigDecimal
 
+val OxyraBlockchainType = BlockchainType.Unsupported("oxyra")
+
 val Token.protocolType: String?
     get() = tokenQuery.protocolType
 
@@ -37,8 +39,9 @@ val Token.isSupported: Boolean
     get() = tokenQuery.isSupported
 
 val Token.iconPlaceholder: Int
-    get() = when (type) {
-        is TokenType.Eip20 -> blockchainType.tokenIconPlaceholder
+    get() = when {
+        type is TokenType.Eip20 -> blockchainType.tokenIconPlaceholder
+        coin.uid == "oxyra" -> R.drawable.oxyra_logo
         else -> R.drawable.coin_placeholder
     }
 
@@ -141,6 +144,9 @@ val TokenQuery.isSupported: Boolean
         BlockchainType.Monero -> {
             tokenType is TokenType.Native
         }
+        OxyraBlockchainType -> {
+            tokenType is TokenType.Native
+        }
         is BlockchainType.Unsupported -> false
     }
 
@@ -167,6 +173,7 @@ val Blockchain.description: String
         BlockchainType.Ton -> "TON"
         BlockchainType.Stellar -> "XLM, Stellar assets"
         BlockchainType.Monero -> "XMR"
+        OxyraBlockchainType -> "OXRX"
         else -> ""
     }
 
@@ -178,9 +185,16 @@ fun Blockchain.assetUrl(code: String, issuer: String) = "https://stellar.expert/
 val BlockchainType.imageUrl: String
     get() = "https://cdn.blocksdecoded.com/blockchain-icons/32px/$uid@3x.png"
 
+val BlockchainType.imageResource: Int?
+    get() = when (this) {
+        OxyraBlockchainType -> R.drawable.oxyra_logo
+        else -> null
+    }
+
 val BlockchainType.restoreSettingTypes: List<RestoreSettingType>
     get() = when (this) {
         BlockchainType.Monero,
+        OxyraBlockchainType,
         BlockchainType.Zcash -> listOf(RestoreSettingType.BirthdayHeight)
         else -> listOf()
     }
@@ -191,6 +205,7 @@ private val blockchainOrderMap: Map<BlockchainType, Int> by lazy {
         BlockchainType.Bitcoin,
         BlockchainType.Ethereum,
         BlockchainType.Monero,
+        OxyraBlockchainType,
         BlockchainType.Tron,
         BlockchainType.Zcash,
         BlockchainType.Dash,
@@ -259,6 +274,7 @@ val BlockchainType.title: String
     BlockchainType.Ton -> "Ton"
     BlockchainType.Stellar -> "Stellar"
     BlockchainType.Monero -> "Monero"
+    OxyraBlockchainType -> "Oxyra"
     is BlockchainType.Unsupported -> this.uid
 }
 
@@ -338,6 +354,7 @@ val BlockchainType.isEvm: Boolean
         is BlockchainType.Unsupported,
         BlockchainType.Zcash,
         BlockchainType.Monero,
+        OxyraBlockchainType,
             -> false
     }
 
@@ -358,6 +375,7 @@ fun BlockchainType.supports(accountType: AccountType): Boolean {
                 BlockchainType.Gnosis,
                 BlockchainType.Litecoin,
                 BlockchainType.Monero,
+                OxyraBlockchainType,
                 BlockchainType.Optimism,
                 BlockchainType.Polygon,
                 BlockchainType.Solana,
@@ -458,7 +476,7 @@ val Coin.alternativeImageUrl: String?
     get() = image
 
 val Coin.imagePlaceholder: Int
-    get() = R.drawable.coin_placeholder
+    get() = if (uid == "oxyra") R.drawable.oxyra_logo else R.drawable.coin_placeholder
 
 val TopPlatform.imageUrl
     get() = "https://cdn.blocksdecoded.com/blockchain-icons/32px/${blockchain.uid}@3x.png"
@@ -664,6 +682,7 @@ val BlockchainType.Companion.supported: List<BlockchainType>
         BlockchainType.Ton,
         BlockchainType.Stellar,
         BlockchainType.Monero,
+        OxyraBlockchainType,
     )
 
 val CoinPrice.diff: BigDecimal?

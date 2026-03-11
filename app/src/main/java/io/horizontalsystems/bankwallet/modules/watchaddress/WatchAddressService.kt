@@ -2,6 +2,7 @@ package io.horizontalsystems.bankwallet.modules.watchaddress
 
 import io.horizontalsystems.bankwallet.core.IAccountFactory
 import io.horizontalsystems.bankwallet.core.IAccountManager
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.managers.EvmBlockchainManager
 import io.horizontalsystems.bankwallet.core.managers.MarketKitWrapper
 import io.horizontalsystems.bankwallet.core.managers.RestoreSettings
@@ -100,6 +101,7 @@ class WatchAddressService(
                     if (BlockchainType.Monero.supports(accountType)) {
                         add(TokenQuery(BlockchainType.Monero, TokenType.Native))
                     }
+                    add(TokenQuery(OxyraBlockchainType, TokenType.Native))
                 }
             }
         }
@@ -121,6 +123,7 @@ class WatchAddressService(
         if (accountType is AccountType.MoneroWatchAccount) {
             val restoreSettings = RestoreSettings().apply { birthdayHeight = accountType.restoreHeight }
             restoreSettingsManager.save(restoreSettings, account, BlockchainType.Monero)
+            restoreSettingsManager.save(restoreSettings, account, OxyraBlockchainType)
         }
 
         try {

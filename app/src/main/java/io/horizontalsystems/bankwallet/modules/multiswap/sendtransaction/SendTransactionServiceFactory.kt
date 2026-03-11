@@ -3,7 +3,9 @@ package io.horizontalsystems.bankwallet.modules.multiswap.sendtransaction
 import io.horizontalsystems.bankwallet.core.App
 import io.horizontalsystems.bankwallet.core.UnsupportedException
 import io.horizontalsystems.bankwallet.core.adapters.MoneroAdapter
+import io.horizontalsystems.bankwallet.core.adapters.OxyraAdapter
 import io.horizontalsystems.bankwallet.core.adapters.zcash.ZcashAdapter
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.marketkit.models.BlockchainType
 import io.horizontalsystems.marketkit.models.Token
 
@@ -58,6 +60,12 @@ object SendTransactionServiceFactory {
                 val adapter = App.adapterManager.getAdapterForToken<MoneroAdapter>(token)
                     ?: throw IllegalStateException("MoneroAdapter is null")
                 SendTransactionServiceMonero(adapter)
+            }
+
+            OxyraBlockchainType -> {
+                val adapter = App.adapterManager.getAdapterForToken<OxyraAdapter>(token)
+                    ?: throw IllegalStateException("OxyraAdapter is null")
+                SendTransactionServiceOxyra(adapter)
             }
 
             is BlockchainType.Unsupported,

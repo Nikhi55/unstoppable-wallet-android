@@ -17,7 +17,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
 import io.horizontalsystems.bankwallet.R
 import io.horizontalsystems.bankwallet.core.BaseComposeFragment
 import io.horizontalsystems.bankwallet.core.slideFromBottom
@@ -131,6 +130,15 @@ private fun onClick(
                 event = StatEvent.OpenBlockchainSettingsEvm(item.blockchainItem.blockchain.uid)
             )
         }
+
+        is BlockchainSettingsModule.BlockchainItem.Oxyra -> {
+            navController.slideFromBottom(R.id.oxyraNetworkFragment)
+
+            stat(
+                page = StatPage.BlockchainSettings,
+                event = StatEvent.OpenBlockchainSettingsEvm(item.blockchainItem.blockchain.uid)
+            )
+        }
     }
 }
 
@@ -146,10 +154,7 @@ private fun BlockchainSettingCell(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .size(32.dp),
-            painter = rememberAsyncImagePainter(
-                model = item.imageUrl,
-                error = painterResource(R.drawable.ic_platform_placeholder_32)
-            ),
+            painter = item.imageSource.painter(),
             contentDescription = null,
         )
         Column(modifier = Modifier.weight(1f)) {

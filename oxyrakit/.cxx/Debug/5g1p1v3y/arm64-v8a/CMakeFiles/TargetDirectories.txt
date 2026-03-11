@@ -1,0 +1,3 @@
+/Users/nikhilbura/unstoppable-wallet-android/oxyrakit/.cxx/Debug/5g1p1v3y/arm64-v8a/CMakeFiles/oxyrujo.dir
+/Users/nikhilbura/unstoppable-wallet-android/oxyrakit/.cxx/Debug/5g1p1v3y/arm64-v8a/CMakeFiles/edit_cache.dir
+/Users/nikhilbura/unstoppable-wallet-android/oxyrakit/.cxx/Debug/5g1p1v3y/arm64-v8a/CMakeFiles/rebuild_cache.dir

@@ -13,6 +13,7 @@ import io.horizontalsystems.core.IThirdKeyboard
 import io.horizontalsystems.hdwalletkit.Language
 import io.horizontalsystems.hdwalletkit.Mnemonic
 import io.horizontalsystems.hdwalletkit.WordList
+import io.horizontalsystems.oxyrakit.CakeWalletStyleConverter
 
 class RestoreMnemonicNonStandardViewModel(
     accountFactory: IAccountFactory,
@@ -56,16 +57,30 @@ class RestoreMnemonicNonStandardViewModel(
         language = language,
     )
 
+    private val moneroWordSet = CakeWalletStyleConverter.MONERO_WORDLIST.toSet()
+
+    private fun isMoneroWord(word: String): Boolean = word in moneroWordSet
+
     private fun processText() {
         wordItems = wordItems(text)
-        invalidWordItems = wordItems.filter { !mnemonicWordList.validWord(it.word, false) }
+
+        // For 25-word input, validate against Monero wordlist instead of BIP39
+        val isOxyraMoneroSeed = wordItems.size == 25
+        invalidWordItems = if (isOxyraMoneroSeed) {
+            wordItems.filter { !isMoneroWord(it.word) }
+        } else {
+            wordItems.filter { !mnemonicWordList.validWord(it.word, false) }
+        }
 
         val wordItemWithCursor = wordItems.find {
             it.range.contains(cursorPosition - 1)
         }
 
         val invalidWordItemsExcludingCursoredPartiallyValid = when {
-            wordItemWithCursor != null && mnemonicWordList.validWord(wordItemWithCursor.word, true) -> {
+            wordItemWithCursor != null && (
+                mnemonicWordList.validWord(wordItemWithCursor.word, true) ||
+                (isOxyraMoneroSeed && isMoneroWord(wordItemWithCursor.word))
+            ) -> {
                 invalidWordItems.filter { it != wordItemWithCursor }
             }
             else -> invalidWordItems
@@ -114,24 +129,40 @@ class RestoreMnemonicNonStandardViewModel(
     }
 
     fun onProceed() {
+        val allowedWordCounts = Mnemonic.EntropyStrength.values().map { it.wordCount } + 25
+
+        android.util.Log.e("eee", "onProceed: wordCount=${wordItems.size} invalidWords=${invalidWordItems.size} invalidWords=${invalidWordItems.map { it.word }} allowedCounts=$allowedWordCounts passphraseEnabled=$passphraseEnabled")
+
         when {
             invalidWordItems.isNotEmpty() -> {
+                android.util.Log.e("eee", "onProceed: BLOCKED by invalidWordItems: ${invalidWordItems.map { it.word }}")
                 invalidWordRanges = invalidWordItems.map { it.range }
             }
-            wordItems.size !in (Mnemonic.EntropyStrength.values().map { it.wordCount }) -> {
+            wordItems.size !in allowedWordCounts -> {
+                android.util.Log.e("eee", "onProceed: BLOCKED by wordCount=${wordItems.size} not in $allowedWordCounts")
                 error = Translator.getString(R.string.Restore_Error_MnemonicWordCount, wordItems.size)
             }
             passphraseEnabled && passphrase.isBlank() -> {
+                android.util.Log.e("eee", "onProceed: BLOCKED by empty passphrase")
                 passphraseError = Translator.getString(R.string.Restore_Error_EmptyPassphrase)
             }
             else -> {
                 try {
                     val words = wordItems.map { it.word }
-                    wordsManager.validateChecksum(words)
-
-                    accountType = AccountType.Mnemonic(words, passphrase)
-                    error = null
+                    if (words.size == 25) {
+                        android.util.Log.e("eee", "onProceed: 25-word Oxyra seed, creating AccountType.Mnemonic")
+                        // 25-word Oxyra/Monero seed — skip BIP39 checksum validation
+                        accountType = AccountType.Mnemonic(words, passphrase)
+                        error = null
+                    } else {
+                        android.util.Log.e("eee", "onProceed: BIP39 seed (${words.size} words), validating checksum")
+                        wordsManager.validateChecksum(words)
+                        accountType = AccountType.Mnemonic(words, passphrase)
+                        error = null
+                    }
+                    android.util.Log.e("eee", "onProceed: SUCCESS accountType=$accountType")
                 } catch (checksumException: Exception) {
+                    android.util.Log.e("eee", "onProceed: EXCEPTION: ${checksumException.message}", checksumException)
                     error = Translator.getString(R.string.Restore_InvalidChecksum)
                 }
             }

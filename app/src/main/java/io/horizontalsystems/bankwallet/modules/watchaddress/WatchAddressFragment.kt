@@ -15,6 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import io.horizontalsystems.bankwallet.R
 import io.horizontalsystems.bankwallet.core.BaseComposeFragment
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.getInput
 import io.horizontalsystems.bankwallet.core.slideFromRight
 import io.horizontalsystems.bankwallet.core.slideFromRightForResult
@@ -90,9 +91,15 @@ fun WatchAddressScreen(navController: NavController, popUpToInclusiveId: Int, in
     if (uiState.openBirthdayHeightScreen) {
         viewModel.onBirthdayHeightScreenOpened()
 
+        val birthdayBlockchainType = if (uiState.addressType == WatchAddressViewModel.Type.OxyraAddress) {
+            OxyraBlockchainType
+        } else {
+            BlockchainType.Monero
+        }
+
         navController.slideFromRightForResult<BirthdayHeightConfig.Result>(
             resId = R.id.zcashConfigure,
-            input = BlockchainType.Monero
+            input = birthdayBlockchainType
         ) { result ->
             if (result.config != null) {
                 viewModel.onBirthdayHeightEntered(result.config.birthdayHeight?.toLongOrNull())
@@ -166,7 +173,7 @@ fun WatchAddressScreen(navController: NavController, popUpToInclusiveId: Int, in
                 }
             )
 
-            if (uiState.addressType == WatchAddressViewModel.Type.MoneroAddress) {
+            if (uiState.addressType == WatchAddressViewModel.Type.MoneroAddress || uiState.addressType == WatchAddressViewModel.Type.OxyraAddress) {
                 FormsInput(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
                     initial = uiState.viewKeyState?.dataOrNull,

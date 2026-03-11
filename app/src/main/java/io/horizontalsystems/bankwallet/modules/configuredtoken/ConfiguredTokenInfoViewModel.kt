@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import io.horizontalsystems.bankwallet.core.App
 import io.horizontalsystems.bankwallet.core.IAccountManager
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.alternativeImageUrl
 import io.horizontalsystems.bankwallet.core.assetUrl
 import io.horizontalsystems.bankwallet.core.eip20TokenUrl
@@ -46,6 +47,7 @@ class ConfiguredTokenInfoViewModel(
             }
             TokenType.Native -> when (token.blockchainType) {
                 BlockchainType.Monero,
+                OxyraBlockchainType,
                 BlockchainType.Zcash -> {
                     ConfiguredTokenInfoType.BirthdayHeight(getBirthdayHeight(token))
                 }

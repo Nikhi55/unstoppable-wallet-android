@@ -1,5 +1,6 @@
 package io.horizontalsystems.bankwallet.core.factories
 
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.bankwallet.core.managers.EvmBlockchainManager
 import io.horizontalsystems.marketkit.models.BlockchainType
 
@@ -21,6 +22,7 @@ val BlockchainType.uriScheme: String?
             BlockchainType.Tron -> "tron"
             BlockchainType.Stellar -> "stellar"
             BlockchainType.Monero -> "monero"
+            OxyraBlockchainType -> "oxyra"
             else -> null
         }
     }
@@ -40,7 +42,8 @@ val BlockchainType.removeScheme: Boolean
             BlockchainType.Ton,
             BlockchainType.Tron,
             BlockchainType.Stellar,
-            BlockchainType.Monero -> true
+            BlockchainType.Monero,
+            OxyraBlockchainType -> true
 
             else -> false
         }

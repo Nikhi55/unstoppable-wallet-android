@@ -60,6 +60,7 @@ import io.horizontalsystems.bankwallet.uiv3.components.menu.MenuGroup
 import io.horizontalsystems.bankwallet.uiv3.components.menu.MenuItemX
 import io.horizontalsystems.core.helpers.DateHelper
 import io.horizontalsystems.core.helpers.HudHelper
+import io.horizontalsystems.bankwallet.core.OxyraBlockchainType
 import io.horizontalsystems.marketkit.models.BlockchainType
 
 @Composable
@@ -785,6 +786,7 @@ private fun openTransactionOptionsModule(
         BlockchainType.Ton,
         BlockchainType.Stellar,
         BlockchainType.Monero,
+        OxyraBlockchainType,
         is BlockchainType.Unsupported -> Unit
     }
 

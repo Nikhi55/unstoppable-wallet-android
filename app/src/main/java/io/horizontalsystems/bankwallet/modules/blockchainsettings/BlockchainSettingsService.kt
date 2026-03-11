@@ -4,6 +4,7 @@ import io.horizontalsystems.bankwallet.core.managers.BtcBlockchainManager
 import io.horizontalsystems.bankwallet.core.managers.EvmBlockchainManager
 import io.horizontalsystems.bankwallet.core.managers.EvmSyncSourceManager
 import io.horizontalsystems.bankwallet.core.managers.MoneroNodeManager
+import io.horizontalsystems.bankwallet.core.managers.OxyraNodeManager
 import io.horizontalsystems.bankwallet.core.managers.SolanaRpcSourceManager
 import io.horizontalsystems.bankwallet.modules.blockchainsettings.BlockchainSettingsModule.BlockchainItem
 import io.reactivex.Observable
@@ -19,7 +20,8 @@ class BlockchainSettingsService(
     private val evmBlockchainManager: EvmBlockchainManager,
     private val evmSyncSourceManager: EvmSyncSourceManager,
     private val solanaRpcSourceManager: SolanaRpcSourceManager,
-    private val moneroNodeManager: MoneroNodeManager
+    private val moneroNodeManager: MoneroNodeManager,
+    private val oxyraNodeManager: OxyraNodeManager
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.Default)
 
@@ -60,6 +62,11 @@ class BlockchainSettingsService(
                 syncBlockchainItems()
             }
         }
+        coroutineScope.launch {
+            oxyraNodeManager.currentNodeUpdatedFlow.collect {
+                syncBlockchainItems()
+            }
+        }
 
         coroutineScope.launch {
             syncBlockchainItems()
@@ -92,7 +99,12 @@ class BlockchainSettingsService(
             moneroBlockchainItems.add(BlockchainItem.Monero(it, moneroNodeManager.currentNode))
         }
 
-        blockchainItems = (btcBlockchainItems +  evmBlockchainItems + solanaBlockchainItems + moneroBlockchainItems).sortedBy { it.order }
+        val oxyraBlockchainItems = mutableListOf<BlockchainItem>()
+        oxyraNodeManager.blockchain?.let {
+            oxyraBlockchainItems.add(BlockchainItem.Oxyra(it, oxyraNodeManager.currentNode))
+        }
+
+        blockchainItems = (btcBlockchainItems + evmBlockchainItems + solanaBlockchainItems + moneroBlockchainItems + oxyraBlockchainItems).sortedBy { it.order }
     }
 
 }
